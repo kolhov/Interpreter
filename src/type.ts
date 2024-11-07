@@ -21,7 +21,8 @@ export type TokenType =
   | "END"
   | "UNKNOWN"
   | "OP"
-  | "CP";
+  | "CP"
+  | "COMMENT";
 
 export interface Token {
   type: TokenType;

@@ -1,15 +1,15 @@
 import * as fs from 'fs';
 import {Token} from "./type";
 
-const filePath = '../input/test.notlua';
+const filePath = './input/test.notlua';
 
 let charNumberInLine = 0;
 let lineNumber = 1;
 let currentIndex = 0;
 
 const fileData = fs.readFileSync(filePath, 'utf8');
-const tokens = lexer(fileData);
-
+const tokens: Token[] = lexer(fileData);
+console.log(tokens);
 
 /*
 Definition block
@@ -58,7 +58,7 @@ function lexer(code: string){
   let tokens: Token[] = [];
   let fileDataLength = code.length;
 
-  while (currentIndex < fileDataLength) {
+  while (currentIndex < fileDataLength -1) {
     let char = getChar();
 
     if (isDigit(char)) {
@@ -80,7 +80,7 @@ function lexer(code: string){
         charNumberInLine++;
       }
 
-      keyWord(idStr);
+      tokens.push(keyWord(idStr));
       continue;
     }
 
@@ -110,8 +110,8 @@ function lexer(code: string){
         tokens.push({ type: "GT", value: char });
         currentIndex++;
         charNumberInLine++;
-        continue;
       }
+      continue;
     }
 
     if (char === '<') {
@@ -123,8 +123,8 @@ function lexer(code: string){
         tokens.push({ type: "LESS", value: char });
         currentIndex++;
         charNumberInLine++;
-        continue;
       }
+      continue;
     }
 
     if (char === '+') {
@@ -149,9 +149,25 @@ function lexer(code: string){
     }
 
     if (char === '-') {
-      tokens.push({ type: "MINUS", value: char });
-      currentIndex++;
-      charNumberInLine++;
+      // Test for comment
+      if (currentIndex + 1 < code.length && code[currentIndex + 1] === '-') {
+        currentIndex += 2;
+        charNumberInLine += 2;
+        let str = "";
+        while (currentIndex < code.length) {
+          if (code[currentIndex] == '\r\n' || code[currentIndex] == '\r' || code[currentIndex] == '\n'){
+            break;
+          }
+          str += code[currentIndex];
+          currentIndex++;
+          charNumberInLine++;
+        }
+        tokens.push({ type: "COMMENT", value: str });
+      } else {
+        tokens.push({ type: "MINUS", value: char });
+        currentIndex++;
+        charNumberInLine++;
+      }
       continue;
     }
 
@@ -182,6 +198,8 @@ function lexer(code: string){
       }
       continue;
     }
+
+    if (char === '')
 
     // Exception
     tokens.push({ type: "UNKNOWN", value: `Error on ${lineNumber}:${currentIndex + 1}, char: ${char}` });
@@ -288,23 +306,25 @@ function keyWord(idStr: string) {
     }
   }
 
+  let token: Token;
   switch (state) {
     case k_if:
-      tokens.push({ type: "IF", value: idStr }); break;
+      token = { type: "IF", value: idStr }; break;
     case k_else:
-      tokens.push({ type: "ELSE", value: idStr }); break;
+      token = { type: "ELSE", value: idStr }; break;
     case k_elseif:
-      tokens.push({ type: "ELSEIF", value: idStr }); break;
+      token = { type: "ELSEIF", value: idStr }; break;
     case k_end:
-      tokens.push({ type: "END", value: idStr }); break;
+      token = { type: "END", value: idStr }; break;
     case k_then:
-      tokens.push({ type: "THEN", value: idStr }); break;
+      token = { type: "THEN", value: idStr }; break;
     case k_print:
-      tokens.push({ type: "PRINT", value: idStr }); break;
+      token = { type: "PRINT", value: idStr }; break;
     case k_read:
-      tokens.push({ type: "READ", value: idStr }); break;
+      token = { type: "READ", value: idStr }; break;
     default:
-      tokens.push({ type: "ID", value: idStr });
+      token = { type: "ID", value: idStr };
   }
+  return token;
 }
 
