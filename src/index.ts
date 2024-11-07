@@ -102,17 +102,29 @@ function lexer(code: string){
 
     // Operators
     if (char === '>') {
-      tokens.push({ type: "GT", value: char });
-      currentIndex++;
-      charNumberInLine++;
-      continue;
+      if (currentIndex + 1 < code.length && code[currentIndex + 1] === '=') {
+        tokens.push({ type: "GT_EQ", value: ">=" });
+        currentIndex += 2;
+        charNumberInLine += 2;
+      } else {
+        tokens.push({ type: "GT", value: char });
+        currentIndex++;
+        charNumberInLine++;
+        continue;
+      }
     }
 
     if (char === '<') {
-      tokens.push({ type: "LESS", value: char });
-      currentIndex++;
-      charNumberInLine++;
-      continue;
+      if (currentIndex + 1 < code.length && code[currentIndex + 1] === '=') {
+        tokens.push({ type: "LESS_EQ", value: "<=" });
+        currentIndex += 2;
+        charNumberInLine += 2;
+      } else {
+        tokens.push({ type: "LESS", value: char });
+        currentIndex++;
+        charNumberInLine++;
+        continue;
+      }
     }
 
     if (char === '+') {
