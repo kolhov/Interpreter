@@ -185,6 +185,13 @@ function lexer(code: string){
       continue;
     }
 
+    if (char === '!') {
+      tokens.push({ type: "NOT", value: char });
+      currentIndex++;
+      charNumberInLine++;
+      continue;
+    }
+
     if (char === '=') {
       // Test for equal '=='
       if (currentIndex + 1 < code.length && code[currentIndex + 1] === '=') {
@@ -199,7 +206,6 @@ function lexer(code: string){
       continue;
     }
 
-    if (char === '')
 
     // Exception
     tokens.push({ type: "UNKNOWN", value: `Error on ${lineNumber}:${currentIndex + 1}, char: ${char}` });
