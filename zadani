@@ -1,0 +1,23 @@
+Syntaktické prvky:
+
+    6 klic. slov:
+
+    else      elseif    if      then      end
+
+
+    operatory:
+
+    { +, -, *, /, ), (, 0-9 }
+    { <, >, <=, >=, ==, != }
+    { = }
+
+    function:
+
+    print(prom)
+    io.read()
+
+    promneny:
+
+    ['local, ''] prom1
+
+Rozhodování, podmínka je výraz < výraz nebo výraz == výraz.
