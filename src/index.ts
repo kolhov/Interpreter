@@ -3,11 +3,13 @@ import {Token} from "./type";
 
 const filePath = './input/test.notlua';
 
+// For UX purpose
 let charNumberInLine = 1;
 let lineNumber = 1;
-let currentIndex = 0;
 
 const fileData = fs.readFileSync(filePath, 'utf8');
+let currentIndex = 0;
+
 const tokens: Token[] = lexer(fileData);
 
 fs.writeFileSync('./output/test-res.txt', JSON.stringify(tokens, null, 2));
