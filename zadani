@@ -10,7 +10,7 @@ Syntaktické prvky:
     operatory:
 
     { +, -, *, /, ), (, 0-9 }
-    { <, >, <=, >=, == }
+    { <, >, <=, >=, ==, != }
     { = }
 
     function:

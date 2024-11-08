@@ -23,7 +23,8 @@ export type TokenType =
   | "OP"
   | "CP"
   | "COMMENT"
-  | "NOT";
+  | "NOT"
+  | "NOT_EQ";
 
 export interface Token {
   type: TokenType;

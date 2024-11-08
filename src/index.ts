@@ -194,9 +194,15 @@ function lexer(code: string){
     }
 
     if (char === '!') {
-      tokens.push({ type: "NOT", value: char });
-      currentIndex++;
-      charNumberInLine++;
+      if (currentIndex + 1 < code.length && code[currentIndex + 1] === '=') {
+        tokens.push({ type: "NOT_EQ", value: "!=" });
+        currentIndex += 2;
+        charNumberInLine += 2;
+      } else {
+        tokens.push({ type: "NOT", value: char });
+        currentIndex++;
+        charNumberInLine++;
+      }
       continue;
     }
 
