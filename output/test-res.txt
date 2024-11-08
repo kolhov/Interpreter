@@ -1,0 +1,202 @@
+[
+  {
+    "type": "COMMENT",
+    "value": " testovani global var + function read"
+  },
+  {
+    "type": "ID",
+    "value": "start"
+  },
+  {
+    "type": "ASSIGN",
+    "value": "="
+  },
+  {
+    "type": "READ",
+    "value": "read"
+  },
+  {
+    "type": "OP",
+    "value": "("
+  },
+  {
+    "type": "CP",
+    "value": ")"
+  },
+  {
+    "type": "COMMENT",
+    "value": " testovani mat vyraz"
+  },
+  {
+    "type": "ID",
+    "value": "number"
+  },
+  {
+    "type": "ASSIGN",
+    "value": "="
+  },
+  {
+    "type": "NUMBER",
+    "value": 3
+  },
+  {
+    "type": "PLUS",
+    "value": "+"
+  },
+  {
+    "type": "ID",
+    "value": "start"
+  },
+  {
+    "type": "PLUS",
+    "value": "+"
+  },
+  {
+    "type": "NUMBER",
+    "value": 4
+  },
+  {
+    "type": "MINUS",
+    "value": "-"
+  },
+  {
+    "type": "NUMBER",
+    "value": 2
+  },
+  {
+    "type": "MULTIPLY",
+    "value": "*"
+  },
+  {
+    "type": "OP",
+    "value": "("
+  },
+  {
+    "type": "ID",
+    "value": "start"
+  },
+  {
+    "type": "DIV",
+    "value": "/"
+  },
+  {
+    "type": "NUMBER",
+    "value": 1
+  },
+  {
+    "type": "CP",
+    "value": ")"
+  },
+  {
+    "type": "COMMENT",
+    "value": " testovani klic. slov { if, then, end, elseif, else } + operatory { >, == }"
+  },
+  {
+    "type": "COMMENT",
+    "value": " a funcke print()"
+  },
+  {
+    "type": "IF",
+    "value": "if"
+  },
+  {
+    "type": "NUMBER",
+    "value": 1
+  },
+  {
+    "type": "MINUS",
+    "value": "-"
+  },
+  {
+    "type": "ID",
+    "value": "number"
+  },
+  {
+    "type": "GT",
+    "value": ">"
+  },
+  {
+    "type": "NUMBER",
+    "value": 10
+  },
+  {
+    "type": "THEN",
+    "value": "then"
+  },
+  {
+    "type": "PRINT",
+    "value": "print"
+  },
+  {
+    "type": "OP",
+    "value": "("
+  },
+  {
+    "type": "STRING",
+    "value": "cislo > 10"
+  },
+  {
+    "type": "CP",
+    "value": ")"
+  },
+  {
+    "type": "ELSEIF",
+    "value": "elseif"
+  },
+  {
+    "type": "ID",
+    "value": "number"
+  },
+  {
+    "type": "EQ",
+    "value": "=="
+  },
+  {
+    "type": "NUMBER",
+    "value": 10
+  },
+  {
+    "type": "THEN",
+    "value": "then"
+  },
+  {
+    "type": "PRINT",
+    "value": "print"
+  },
+  {
+    "type": "OP",
+    "value": "("
+  },
+  {
+    "type": "STRING",
+    "value": "cislo = 10"
+  },
+  {
+    "type": "CP",
+    "value": ")"
+  },
+  {
+    "type": "ELSE",
+    "value": "else"
+  },
+  {
+    "type": "PRINT",
+    "value": "print"
+  },
+  {
+    "type": "OP",
+    "value": "("
+  },
+  {
+    "type": "STRING",
+    "value": "cislo < 10"
+  },
+  {
+    "type": "CP",
+    "value": ")"
+  },
+  {
+    "type": "END",
+    "value": "end"
+  }
+]

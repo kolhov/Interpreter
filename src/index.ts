@@ -3,13 +3,16 @@ import {Token} from "./type";
 
 const filePath = './input/test.notlua';
 
-let charNumberInLine = 0;
+let charNumberInLine = 1;
 let lineNumber = 1;
 let currentIndex = 0;
 
 const fileData = fs.readFileSync(filePath, 'utf8');
 const tokens: Token[] = lexer(fileData);
+
+fs.writeFileSync('./output/test-res.txt', JSON.stringify(tokens, null, 2));
 console.log(tokens);
+
 
 /*
 Definition block
@@ -20,7 +23,7 @@ function getChar(){
   // New line
   if (char == '\r\n' || char == '\r' || char == '\n') {
     lineNumber++;
-    charNumberInLine = 0;
+    charNumberInLine = 1;
     char = getNextChar()
   }
 
@@ -29,7 +32,7 @@ function getChar(){
     char = getNextChar()
   }
   if ( char === '\t'){
-    charNumberInLine += 4;  //
+    charNumberInLine += 4;  // Hacky solution
     char = getNextChar()
   }
 
@@ -58,8 +61,11 @@ function lexer(code: string){
   let tokens: Token[] = [];
   let fileDataLength = code.length;
 
-  while (currentIndex < fileDataLength -1) {
+  while (currentIndex < fileDataLength ) {
     let char = getChar();
+    if (char == undefined) {
+      continue;
+    }
 
     if (isDigit(char)) {
       let numStr = "";
@@ -80,7 +86,7 @@ function lexer(code: string){
         charNumberInLine++;
       }
 
-      tokens.push(keyWord(idStr));
+      tokens.push(getWordToken(idStr));
       continue;
     }
 
@@ -212,33 +218,32 @@ function lexer(code: string){
     currentIndex++;
     charNumberInLine++;
   }
-
-
   return tokens;
 }
 
-function keyWord(idStr: string) {
-  // 0 -> i1 | e2 | t8 | p11 | r15
-  // 1 -> f
-  // 2 -> l3 | n7
-  // 3 -> s4
-  // 4 -> e k_else
+function getWordToken(idStr: string) {
+
+  //    0 -> i1 | e2 | t8 | p11 | r15
+  //    1 -> f
+  //    2 -> l3 | n7
+  //    3 -> s4
+  //    4 -> e k_else
   // <- k_else -> i6
-  // 6 -> f
-  // 7 -> d
-  // 8 -> h9
-  // 9 -> e10
-  // 10 -> n
-  // 11 -> r12
-  // 12 -> i13
-  // 13 -> n14
-  // 14 -> t
-  // 15 -> e16
-  // 16 -> a17
-  // 17 -> d18
+  //    6 -> f
+  //    7 -> d
+  //    8 -> h9
+  //    9 -> e10
+  //    10 -> n
+  //    11 -> r12
+  //    12 -> i13
+  //    13 -> n14
+  //    14 -> t
+  //    15 -> e16
+  //    16 -> a17
+  //    17 -> d18
 
   let state = 0;
-  const k_error = 23, k_if = 24, k_else = 25, k_elseif = 26, k_end = 27, k_then = 28, k_print = 29, k_read = 30;
+  const k_else = 22, k_error = 23, k_if = 24, k_elseif = 26, k_end = 27, k_then = 28, k_print = 29, k_read = 30;
 
   for (let i = 0; i < idStr.length; i++) {
     if (state >= k_error) break;
