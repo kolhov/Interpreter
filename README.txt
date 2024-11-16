@@ -14,3 +14,6 @@ To run the script, run the following command:
 
 The file to be processed should be located in the input folder,
 and the result will be saved in the output folder.
+
+
+The main code is located in src/index.ts.
