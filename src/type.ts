@@ -22,9 +22,9 @@ export enum TokenType {
   UNKNOWN,
   OP,
   CP,
-  COMMENT,
   NOT,
-  NOT_EQ
+  NOT_EQ,
+  ERROR
 }
 
 export interface Token {

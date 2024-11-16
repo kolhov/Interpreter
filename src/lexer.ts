@@ -5,14 +5,13 @@ export class Lex {
     this.fileData = fileData;
   }
 
-  // For UX purpose
   private columnNumber = 1;
   private lineNumber = 1;
-
-  private fileData: string;
   private currentIndex = 0;
 
-  private getChar(){
+  private fileData: string;
+
+  private getChar() {
     let char = this.fileData[this.currentIndex];
 
     // New line
@@ -31,7 +30,7 @@ export class Lex {
     }
 
     // Tabulation
-    if ( char === '\t'){
+    if (char === '\t') {
       this.currentIndex++;
       this.columnNumber += 4;  // Hacky solution
       char = this.getChar()
@@ -56,12 +55,12 @@ export class Lex {
     console.error(error, ` [${this.columnNumber}]:[${this.lineNumber + 1}]`);
   }
 
-  lexer(){
+  lexer() {
     let code = this.fileData
     let tokens: Token[] = [];
     let fileDataLength = code.length;
 
-    while (this.currentIndex < fileDataLength ) {
+    while (this.currentIndex < fileDataLength) {
       let char = this.getChar();
       if (char == undefined) {
         continue;
@@ -76,8 +75,10 @@ export class Lex {
         }
         if (this.isAlpha(code[this.currentIndex])) {
           this.throwError('Number can\'t contain alpha symbols');
+          tokens.push({type: TokenType.ERROR, value: numStr + code[this.currentIndex]})
+          continue;
         }
-        tokens.push({ type: TokenType.NUMBER, value: parseInt(numStr) });
+        tokens.push({type: TokenType.NUMBER, value: parseInt(numStr)});
         continue;
       }
 
@@ -105,18 +106,18 @@ export class Lex {
         }
         this.currentIndex++; // Skip closing "
         this.columnNumber++;
-        tokens.push({ type: TokenType.STRING, value: str });
+        tokens.push({type: TokenType.STRING, value: str});
         continue;
       }
 
       // Operators
       if (char === '>') {
         if (this.currentIndex + 1 < code.length && code[this.currentIndex + 1] === '=') {
-          tokens.push({ type: TokenType.GT_EQ, value: ">=" });
+          tokens.push({type: TokenType.GT_EQ, value: ">="});
           this.currentIndex += 2;
           this.columnNumber += 2;
         } else {
-          tokens.push({ type: TokenType.GT, value: char });
+          tokens.push({type: TokenType.GT, value: char});
           this.currentIndex++;
           this.columnNumber++;
         }
@@ -125,11 +126,11 @@ export class Lex {
 
       if (char === '<') {
         if (this.currentIndex + 1 < code.length && code[this.currentIndex + 1] === '=') {
-          tokens.push({ type: TokenType.LESS_EQ, value: "<=" });
+          tokens.push({type: TokenType.LESS_EQ, value: "<="});
           this.currentIndex += 2;
           this.columnNumber += 2;
         } else {
-          tokens.push({ type: TokenType.LESS, value: char });
+          tokens.push({type: TokenType.LESS, value: char});
           this.currentIndex++;
           this.columnNumber++;
         }
@@ -137,58 +138,43 @@ export class Lex {
       }
 
       if (char === '+') {
-        tokens.push({ type: TokenType.PLUS, value: char });
+        tokens.push({type: TokenType.PLUS, value: char});
         this.currentIndex++;
         this.columnNumber++;
         continue;
       }
 
       if (char === '*') {
-        tokens.push({ type: TokenType.MULTIPLY, value: char });
+        tokens.push({type: TokenType.MULTIPLY, value: char});
         this.currentIndex++;
         this.columnNumber++;
         continue;
       }
 
       if (char === '/') {
-        tokens.push({ type: TokenType.DIV, value: char });
+        tokens.push({type: TokenType.DIV, value: char});
         this.currentIndex++;
         this.columnNumber++;
         continue;
       }
 
       if (char === '-') {
-        // Test for comment
-        if (this.currentIndex + 1 < code.length && code[this.currentIndex + 1] === '-') {
-          this.currentIndex += 2;
-          this.columnNumber += 2;
-          let str = "";
-          while (this.currentIndex < code.length) {
-            if (code[this.currentIndex] == '\r\n' || code[this.currentIndex] == '\r' || code[this.currentIndex] == '\n'){
-              break;
-            }
-            str += code[this.currentIndex];
-            this.currentIndex++;
-            this.columnNumber++;
-          }
-          tokens.push({ type: TokenType.COMMENT, value: str });
-        } else {
-          tokens.push({ type: TokenType.MINUS, value: char });
-          this.currentIndex++;
-          this.columnNumber++;
-        }
+        tokens.push({type: TokenType.MINUS, value: char});
+        this.currentIndex++;
+        this.columnNumber++;
+
         continue;
       }
 
       if (char === '(') {
-        tokens.push({ type: TokenType.OP, value: char });
+        tokens.push({type: TokenType.OP, value: char});
         this.currentIndex++;
         this.columnNumber++;
         continue;
       }
 
       if (char === ')') {
-        tokens.push({ type: TokenType.CP, value: char });
+        tokens.push({type: TokenType.CP, value: char});
         this.currentIndex++;
         this.columnNumber++;
         continue;
@@ -196,11 +182,11 @@ export class Lex {
 
       if (char === '!') {
         if (this.currentIndex + 1 < code.length && code[this.currentIndex + 1] === '=') {
-          tokens.push({ type: TokenType.NOT_EQ, value: "!=" });
+          tokens.push({type: TokenType.NOT_EQ, value: "!="});
           this.currentIndex += 2;
           this.columnNumber += 2;
         } else {
-          tokens.push({ type: TokenType.NOT, value: char });
+          tokens.push({type: TokenType.NOT, value: char});
           this.currentIndex++;
           this.columnNumber++;
         }
@@ -210,11 +196,11 @@ export class Lex {
       if (char === '=') {
         // Test for equal '=='
         if (this.currentIndex + 1 < code.length && code[this.currentIndex + 1] === '=') {
-          tokens.push({ type: TokenType.EQ, value: "==" });
+          tokens.push({type: TokenType.EQ, value: "=="});
           this.currentIndex += 2;
           this.columnNumber += 2;
         } else {
-          tokens.push({ type: TokenType.ASSIGN, value: "=" });
+          tokens.push({type: TokenType.ASSIGN, value: "="});
           this.currentIndex++;
           this.columnNumber++;
         }
@@ -223,7 +209,10 @@ export class Lex {
 
 
       // Exception
-      tokens.push({ type: TokenType.UNKNOWN, value: `Unknown symbol on [${this.lineNumber}]:[${this.columnNumber}], char: ${char}` });
+      tokens.push({
+        type: TokenType.UNKNOWN,
+        value: `Unknown symbol on [${this.lineNumber}]:[${this.columnNumber}], char: ${char}`
+      });
       this.currentIndex++;
       this.columnNumber++;
     }
@@ -258,12 +247,23 @@ export class Lex {
       switch (state) {
         case 0:
           switch (idStr[i]) {
-            case 'i': state = 1; break;
-            case 'e': state = 2; break;
-            case 't': state = 8; break;
-            case 'p': state = 11; break;
-            case 'r': state = 15; break;
-            default: state = k_error;
+            case 'i':
+              state = 1;
+              break;
+            case 'e':
+              state = 2;
+              break;
+            case 't':
+              state = 8;
+              break;
+            case 'p':
+              state = 11;
+              break;
+            case 'r':
+              state = 15;
+              break;
+            default:
+              state = k_error;
           }
           break;
         case 1:
@@ -271,9 +271,14 @@ export class Lex {
           break;
         case 2:
           switch (idStr[i]) {
-            case 'l': state = 3; break;
-            case 'n': state = 7; break;
-            default: state = k_error;
+            case 'l':
+              state = 3;
+              break;
+            case 'n':
+              state = 7;
+              break;
+            default:
+              state = k_error;
           }
           break;
         case 3:
@@ -321,30 +326,37 @@ export class Lex {
         case 17:
           if (idStr[i] == 'd') state = k_read; else state = k_error;
           break;
-        default: state = k_error;
+        default:
+          state = k_error;
       }
     }
 
     let token: Token;
     switch (state) {
       case k_if:
-        token = { type: TokenType.IF, value: idStr }; break;
+        token = {type: TokenType.IF, value: idStr};
+        break;
       case k_else:
-        token = { type: TokenType.ELSE, value: idStr }; break;
+        token = {type: TokenType.ELSE, value: idStr};
+        break;
       case k_elseif:
-        token = { type: TokenType.ELSEIF, value: idStr }; break;
+        token = {type: TokenType.ELSEIF, value: idStr};
+        break;
       case k_end:
-        token = { type: TokenType.END, value: idStr }; break;
+        token = {type: TokenType.END, value: idStr};
+        break;
       case k_then:
-        token = { type: TokenType.THEN, value: idStr }; break;
+        token = {type: TokenType.THEN, value: idStr};
+        break;
       case k_print:
-        token = { type: TokenType.PRINT, value: idStr }; break;
+        token = {type: TokenType.PRINT, value: idStr};
+        break;
       case k_read:
-        token = { type: TokenType.READ, value: idStr }; break;
+        token = {type: TokenType.READ, value: idStr};
+        break;
       default:
-        token = { type: TokenType.ID, value: idStr };
+        token = {type: TokenType.ID, value: idStr};
     }
     return token;
   }
-
 }
