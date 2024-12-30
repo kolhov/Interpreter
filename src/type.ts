@@ -1,15 +1,15 @@
 export enum TokenType {
   NUMBER,
   ASSIGN,
-  EQ,
-  GT,
+  EQ,         // equal
+  GT,         // greater
   GT_EQ,
   LESS,
   LESS_EQ,
   PLUS,
   MINUS,
   MULTIPLY,
-  DIV,
+  DIV,        // divine
   IF,
   ELSEIF,
   ELSE,
@@ -20,14 +20,18 @@ export enum TokenType {
   STRING,
   END,
   UNKNOWN,
-  OP,
-  CP,
+  OP,         // open parenthesis
+  CP,         // close parenthesis
   NOT,
   NOT_EQ,
-  ERROR
+  ERROR,
+  EXIT        // end of the file
 }
 
 export interface Token {
   type: TokenType;
   value: string | number;
+  lineNumber: number;
+  columnNumber: number;
+  varType?: string;
 }
