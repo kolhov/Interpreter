@@ -1,8 +1,9 @@
-import {Token, TokenType} from "../type";
+import {Token, TokenType, varSemantic} from "../type";
 
 export class Syntax {
 
   private tokens: Token[] = [];
+  private currentIndex: number = 0;
 
   analysis(tokens: Token | Token[]){
     // S → P S    |  ε
@@ -19,59 +20,62 @@ export class Syntax {
       tokens = [tokens];
     }
     this.tokens = tokens;
-    return this.S();
+    this.currentIndex = 0;
+    this.S();
+    return this.tokens;
   }
 
   private exceptOpenParenthesis(){
-    if (this.tokens[0].type != TokenType.OP){
+    if (this.tokens[this.currentIndex].type != TokenType.OP){
       this.throwError('Expected "("');
     }
-    this.tokens.shift();
+    this.currentIndex++;
   }
 
   private exceptCloseParenthesis(){
-    if (this.tokens[0].type != TokenType.CP){
+    if (this.tokens[this.currentIndex].type != TokenType.CP){
       this.throwError('Expected ")"');
     }
-    this.tokens.shift();
+    this.currentIndex++;
   }
 
   private exceptThen(){
-    if (this.tokens[0].type != TokenType.THEN){
+    if (this.tokens[this.currentIndex].type != TokenType.THEN){
       this.throwError('Expected "then"');
     }
-    this.tokens.shift();
+    this.currentIndex++;
   }
 
   private exceptElse(){
-    if (this.tokens[0].type != TokenType.ELSE){
+    if (this.tokens[this.currentIndex].type != TokenType.ELSE){
       this.throwError('Expected "else"');
     }
-    this.tokens.shift();
+    this.currentIndex++;
   }
 
   private exceptElseIf(){
-    if (this.tokens[0].type != TokenType.ELSEIF){
+    if (this.tokens[this.currentIndex].type != TokenType.ELSEIF){
       this.throwError('Expected "else if"');
     }
-    this.tokens.shift();
+    this.currentIndex++;
   }
 
   private exceptEnd(){
-    if (this.tokens[0].type != TokenType.END){
+    if (this.tokens[this.currentIndex].type != TokenType.END){
       this.throwError('Expected "end"');
     }
-    this.tokens.shift();
+    this.currentIndex++;
   }
 
   private throwError(error: string) {
-    throw new Error(error + ` [${ this.tokens[0].lineNumber }]:[${ this.tokens[0].columnNumber + this.tokens[0].value.toString().length }]`);
+    throw new Error(error + ` [${ this.tokens[this.currentIndex].lineNumber }]:
+    [${ this.tokens[this.currentIndex].columnNumber + this.tokens[this.currentIndex].value.toString().length }]`);
   }
 
   // S → P S    |  ε
   private S(){
     let tokens = this.tokens;
-    switch(tokens[0].type){
+    switch(tokens[this.currentIndex].type){
       case TokenType.READ:
       case TokenType.ID:
       case TokenType.PRINT:
@@ -82,33 +86,40 @@ export class Syntax {
       case TokenType.EXIT:
         return 1
       default:
-        this.throwError('')
+        this.throwError('Unexpected symbol')
     }
   }
 
   // P → read ( )     |  id = V    |  print ( V )   |  if M then P E end
   private P(){
     let tokens = this.tokens;
-    switch (tokens[0].type){
+    switch (tokens[this.currentIndex].type){
       case TokenType.READ:
-        tokens.shift();
-        this.exceptOpenParenthesis()
-        this.exceptCloseParenthesis()
+        this.currentIndex++;
+        this.exceptOpenParenthesis();
+        this.exceptCloseParenthesis();
         break;
       case TokenType.ID:
-        tokens.shift();
-        //TODO
-
-
+        if (tokens[this.currentIndex].variable){
+          tokens[this.currentIndex].variable!.isModified = true
+        } else {
+          tokens[this.currentIndex].variable = {
+            isInitialized: true,
+            varType: 'any',
+            initIndex: this.currentIndex,
+            isModified: false
+          } as varSemantic;
+        }
+        this.currentIndex++;
         break;
       case TokenType.PRINT:
-        tokens.shift();
+        this.currentIndex++;
         this.exceptOpenParenthesis()
         this.V();
         this.exceptCloseParenthesis()
         break;
       case TokenType.IF:
-        tokens.shift();
+        this.currentIndex++;
         this.M();
         this.exceptThen();
         this.P();
@@ -133,7 +144,7 @@ export class Syntax {
   // E → elseif M then P E |  else P    |  ε
   private E() {
     let tokens = this.tokens;
-    switch (tokens[0].type){
+    switch (tokens[this.currentIndex].type){
       case TokenType.ELSEIF:
         this.exceptElseIf();
         this.M();
@@ -149,7 +160,7 @@ export class Syntax {
         this.exceptEnd();
         break;
       default:
-        this.throwError('Excepted else or end');
+        this.throwError('Excepted else, else if or end');
     }
   }
 
@@ -161,10 +172,10 @@ export class Syntax {
   // B → + A B  | - A B    | ε
   private B() {
     let tokens = this.tokens;
-    switch (tokens[0].type){
+    switch (tokens[this.currentIndex].type){
       case TokenType.PLUS:
       case TokenType.MINUS:
-        tokens.shift();
+        this.currentIndex++;
         this.A();
         this.B();
     }
@@ -172,11 +183,14 @@ export class Syntax {
 
   private C() {
     let tokens = this.tokens;
-    switch (tokens[0].type){
+    switch (tokens[this.currentIndex].type){
       case TokenType.ID:
+        if (!tokens[this.currentIndex].variable?.isInitialized){
+          this.throwError('Variable have to be initialized')
+        }
       case TokenType.STRING:
       case TokenType.NUMBER:
-        tokens.shift();
+        this.currentIndex++;
         break;
       case TokenType.OP:
         this.exceptOpenParenthesis();
@@ -191,10 +205,10 @@ export class Syntax {
   // K → * C K  |  / C K   |  ε
   private K() {
     let tokens = this.tokens;
-    switch (tokens[0].type){
+    switch (tokens[this.currentIndex].type){
       case TokenType.MULTIPLY:
       case TokenType.DIV:
-        tokens.shift();
+        this.currentIndex++;
         this.C();
         this.K();
     }
@@ -203,13 +217,13 @@ export class Syntax {
   // N → == V   |  > V     |  >= V  |  <= V  |  < V
   private N() {
     let tokens = this.tokens;
-    switch (tokens[0].type){
+    switch (tokens[this.currentIndex].type){
       case TokenType.EQ:
       case TokenType.GT:
       case TokenType.GT_EQ:
       case TokenType.LESS_EQ:
       case TokenType.LESS:
-        tokens.shift();
+        this.currentIndex++;
         this.V();
         break;
       default:

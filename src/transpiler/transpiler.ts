@@ -6,7 +6,7 @@ export class Transpiler {
   private syntaxer: Syntax = new Syntax();
 
   transpile(fileData: string){
-    const tokens = this.lexer.lexer(fileData);
-    const isOk = this.syntaxer.analysis(tokens);
+    let tokens = this.lexer.lexer(fileData);
+    tokens = this.syntaxer.analysis(tokens);
   }
 }

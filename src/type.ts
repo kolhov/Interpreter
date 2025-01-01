@@ -33,5 +33,12 @@ export interface Token {
   value: string | number;
   lineNumber: number;
   columnNumber: number;
+  variable?: varSemantic;
+}
+
+export interface varSemantic {
+  isInitialized: boolean;
+  initIndex: number;
+  isModified: boolean;
   varType?: string;
 }
