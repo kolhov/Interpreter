@@ -1,4 +1,3 @@
-
 -- testovani global var + function read
 start = read()
 

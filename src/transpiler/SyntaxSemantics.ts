@@ -255,6 +255,7 @@ export class Syntax {
       } as varSemantic) - 1;
     }
 
+    this.tokens[this.currentIndex].idIndex = id;
     return id;
   }
 }

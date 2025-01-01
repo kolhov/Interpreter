@@ -17,6 +17,12 @@ export class Lex {
       char = this.getChar()
     }
 
+    // most editors add all newline symbols, skip 2 others
+    if (char == '\n\r' || char == '\r') {
+      this.currentIndex++;
+      char = this.getChar()
+    }
+
     // Skip spaces
     if (char === ' ') {
       this.currentIndex++;
