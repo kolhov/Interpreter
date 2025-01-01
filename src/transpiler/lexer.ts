@@ -10,7 +10,7 @@ export class Lex {
     let char = this.fileData[this.currentIndex];
 
     // New line
-    if (char == '\r\n' || char == '\r' || char == '\n') {
+    if (char == '\n') {
       this.lineNumber++;
       this.columnNumber = 1;
       this.currentIndex++;

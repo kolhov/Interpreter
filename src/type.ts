@@ -33,12 +33,13 @@ export interface Token {
   value: string | number;
   lineNumber: number;
   columnNumber: number;
-  variable?: varSemantic;
+  idIndex?: number;
 }
 
 export interface varSemantic {
+  value: string;
   isInitialized: boolean;
-  initIndex: number;
+  initIndex: number;            // index of first initialization
   isModified: boolean;
   varType?: string;
 }

@@ -3,16 +3,17 @@ import {Token, TokenType, varSemantic} from "../type";
 export class Syntax {
 
   private tokens: Token[] = [];
+  private varTable: varSemantic[] = [];
   private currentIndex: number = 0;
 
   analysis(tokens: Token | Token[]){
     // S → P S    |  ε
-    // P → read ( )          |  id = V    |  print ( V )   |  if M then P E end
+    // P → id = V            |  print ( V )   |  if M then P E end
     // E → elseif M then P E |  else P    |  ε
     // V → A B
     // A → C K
     // B → + A B  | - A B    | ε
-    // C → id     | number   | string | ( V )
+    // C → id     | number   | string | ( V )  | read ( )
     // K → * C K  |  / C K   |  ε
     // M → V N
     // N → == V   |  > V     |  >= V  |  <= V  |  < V
@@ -22,7 +23,7 @@ export class Syntax {
     this.tokens = tokens;
     this.currentIndex = 0;
     this.S();
-    return this.tokens;
+    return { tokens: this.tokens, varTable: this.varTable};
   }
 
   private exceptOpenParenthesis(){
@@ -67,9 +68,16 @@ export class Syntax {
     this.currentIndex++;
   }
 
+  private exceptEqual(){
+    if (this.tokens[this.currentIndex].type != TokenType.ASSIGN){
+      this.throwError('Expected "="');
+    }
+    this.currentIndex++;
+  }
+
   private throwError(error: string) {
-    throw new Error(error + ` [${ this.tokens[this.currentIndex].lineNumber }]:
-    [${ this.tokens[this.currentIndex].columnNumber + this.tokens[this.currentIndex].value.toString().length }]`);
+    throw new Error(error + ` [${ this.tokens[this.currentIndex].lineNumber }]:[${
+      this.tokens[this.currentIndex].columnNumber + this.tokens[this.currentIndex].value.toString().length }] Token index: ${this.currentIndex}`);
   }
 
   // S → P S    |  ε
@@ -84,7 +92,7 @@ export class Syntax {
         this.S();
         break;
       case TokenType.EXIT:
-        return 1
+        break;
       default:
         this.throwError('Unexpected symbol')
     }
@@ -100,17 +108,16 @@ export class Syntax {
         this.exceptCloseParenthesis();
         break;
       case TokenType.ID:
-        if (tokens[this.currentIndex].variable){
-          tokens[this.currentIndex].variable!.isModified = true
+        let idIndex = this.resolveIdIndex(tokens[this.currentIndex]);
+        if (this.varTable[idIndex].isInitialized){
+          this.varTable[idIndex].isModified = true;
         } else {
-          tokens[this.currentIndex].variable = {
-            isInitialized: true,
-            varType: 'any',
-            initIndex: this.currentIndex,
-            isModified: false
-          } as varSemantic;
+          this.varTable[idIndex].isInitialized = true;
+          this.varTable[idIndex].initIndex = this.currentIndex;
         }
         this.currentIndex++;
+        this.exceptEqual();
+        this.V();
         break;
       case TokenType.PRINT:
         this.currentIndex++;
@@ -185,12 +192,17 @@ export class Syntax {
     let tokens = this.tokens;
     switch (tokens[this.currentIndex].type){
       case TokenType.ID:
-        if (!tokens[this.currentIndex].variable?.isInitialized){
+        if (!this.varTable[this.resolveIdIndex(tokens[this.currentIndex])].isInitialized){
           this.throwError('Variable have to be initialized')
         }
       case TokenType.STRING:
       case TokenType.NUMBER:
         this.currentIndex++;
+        break;
+      case TokenType.READ:
+        this.currentIndex++;
+        this.exceptOpenParenthesis();
+        this.exceptCloseParenthesis();
         break;
       case TokenType.OP:
         this.exceptOpenParenthesis();
@@ -229,5 +241,20 @@ export class Syntax {
       default:
         this.throwError('Expected comparison operators')
     }
+  }
+
+  private resolveIdIndex(token: Token) {
+    let id = this.varTable.findIndex(x => x.value == token.value);
+    if (id === -1){
+      // If variable is not in variable table. create one
+      id = this.varTable.push({
+        value: token.value,
+        isInitialized: false,
+        initIndex: -1,
+        isModified: false
+      } as varSemantic) - 1;
+    }
+
+    return id;
   }
 }
