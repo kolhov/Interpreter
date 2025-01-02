@@ -1,11 +1,9 @@
--- testovani global var + function read
+    -- testovani global var + function read
 start = read()
-
--- testovani mat vyraz
+    -- testovani mat vyraz
 number = 3 + start + 4 - 2 * (start / 1)
-
--- testovani klic. slov { if, then, end, elseif, else } + operatory { >, == }
--- a funcke print()
+    -- testovani klic. slov { if, then, end, elseif, else } + operatory { >, == }
+    -- a funcke print()
 if 1 - number > 10 then
     print("cislo > 10")
 elseif number == 10 then
@@ -13,3 +11,6 @@ elseif number == 10 then
 else
     print("cislo < 10")
 end
+
+stringLine = "awdads"
+stringLine = "123123"

@@ -25,7 +25,8 @@ export enum TokenType {
   NOT,
   NOT_EQ,
   ERROR,
-  EXIT        // end of the file
+  EXIT,        // end of the file
+  ENDL
 }
 
 export interface Token {

@@ -5,12 +5,14 @@ export class Lex {
   private lineNumber = 1;
   private currentIndex = 0;
   private fileData: string = '';
+  private tokens: Token[] = [];
 
   private getChar() {
     let char = this.fileData[this.currentIndex];
 
     // New line
     if (char == '\n') {
+      this.tokens.push({type: TokenType.ENDL, value: '', columnNumber: this.columnNumber, lineNumber: this.lineNumber})
       this.lineNumber++;
       this.columnNumber = 1;
       this.currentIndex++;
@@ -59,10 +61,10 @@ export class Lex {
   lexer(fileData: string) {
     this.fileData = fileData;
     let code = fileData;
-    let tokens: Token[] = [];
-    let fileDataLength = code.length;
+    this.tokens = [];
+    let tokens = this.tokens;
 
-    while (this.currentIndex < fileDataLength) {
+    while (this.currentIndex < code.length) {
       let char = this.getChar();
       if (char == undefined) {
         continue;
@@ -77,7 +79,7 @@ export class Lex {
         }
         if (this.isAlpha(code[this.currentIndex])) {
           this.throwError('Number can\'t contain alpha symbols');
-          tokens.push({type: TokenType.ERROR, value: numStr + code[this.currentIndex], columnNumber: this.columnNumber, lineNumber: this.lineNumber})
+          tokens.push({type: TokenType.ERROR, value: numStr + code[this.currentIndex], columnNumber: this.columnNumber, lineNumber: this.lineNumber});
           continue;
         }
         tokens.push({type: TokenType.NUMBER, value: parseInt(numStr), columnNumber: this.columnNumber, lineNumber: this.lineNumber});

@@ -80,8 +80,15 @@ export class Syntax {
       this.tokens[this.currentIndex].columnNumber + this.tokens[this.currentIndex].value.toString().length }] Token index: ${this.currentIndex}`);
   }
 
+  private skipEndOfLine(){
+    while (this.tokens[this.currentIndex].type == TokenType.ENDL){
+      this.currentIndex++;
+    }
+  }
+
   // S → P S    |  ε
   private S(){
+    this.skipEndOfLine();
     let tokens = this.tokens;
     switch(tokens[this.currentIndex].type){
       case TokenType.READ:
@@ -100,6 +107,7 @@ export class Syntax {
 
   // P → read ( )     |  id = V    |  print ( V )   |  if M then P E end
   private P(){
+    this.skipEndOfLine();
     let tokens = this.tokens;
     switch (tokens[this.currentIndex].type){
       case TokenType.READ:
@@ -150,6 +158,7 @@ export class Syntax {
 
   // E → elseif M then P E |  else P    |  ε
   private E() {
+    this.skipEndOfLine();
     let tokens = this.tokens;
     switch (tokens[this.currentIndex].type){
       case TokenType.ELSEIF:
@@ -169,6 +178,7 @@ export class Syntax {
       default:
         this.throwError('Excepted else, else if or end');
     }
+    this.skipEndOfLine();
   }
 
   private A() {
@@ -178,6 +188,7 @@ export class Syntax {
 
   // B → + A B  | - A B    | ε
   private B() {
+    this.skipEndOfLine();
     let tokens = this.tokens;
     switch (tokens[this.currentIndex].type){
       case TokenType.PLUS:
@@ -189,6 +200,7 @@ export class Syntax {
   }
 
   private C() {
+    this.skipEndOfLine();
     let tokens = this.tokens;
     switch (tokens[this.currentIndex].type){
       case TokenType.ID:
@@ -216,6 +228,7 @@ export class Syntax {
 
   // K → * C K  |  / C K   |  ε
   private K() {
+    this.skipEndOfLine();
     let tokens = this.tokens;
     switch (tokens[this.currentIndex].type){
       case TokenType.MULTIPLY:
@@ -228,6 +241,7 @@ export class Syntax {
 
   // N → == V   |  > V     |  >= V  |  <= V  |  < V
   private N() {
+    this.skipEndOfLine();
     let tokens = this.tokens;
     switch (tokens[this.currentIndex].type){
       case TokenType.EQ:
