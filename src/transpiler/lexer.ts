@@ -1,6 +1,6 @@
-import {Token, TokenType} from "../type";
+import {Token, TokenType} from "./tokenType/type";
 
-export class Lex {
+export default class Lex {
   private columnNumber = 1;
   private lineNumber = 1;
   private currentIndex = 0;

@@ -1,4 +1,4 @@
-import {Token, TokenType, varSemantic} from "../type";
+import {Token, TokenType, varSemantic} from "./tokenType/type";
 
 export class Generator {
   private currentIndex = 0;
